@@ -1,5 +1,5 @@
-#include "flite_arduino.h" // install https://github.com/pschatzmann/arduino-flite
-#include "AudioTools.h" // install https://github.com/pschatzmann/arduino-audio-tools
+#include "flite_arduino.h" 
+#include "AudioTools.h" 
 #include "HardwareSerial.h"
 //#include "AudioLibs/AudioKit.h"
 
@@ -13,19 +13,17 @@ void setup(){
   TextSerial.begin(115200, SERIAL_8N1, 5, 6);
   //AudioLogger::instance().begin(Serial, AudioLogger::None);
 
-  // start data sink
   auto cfg = out.defaultConfig();
   cfg.sample_rate = 8000;
   cfg.channels = 1;
   cfg.bits_per_sample = 16;
   cfg.i2s_format = I2S_LSB_FORMAT;
-  cfg.pin_ws = 9;
+  cfg.pin_ws = 7;
   cfg.pin_data = 8;
-  cfg.pin_bck = 7;
+  cfg.pin_bck = 9;
   out.begin(cfg);
 }
-
-// Arduino loop  
+ 
 void loop() {  
     String sin = TextSerial.readStringUntil('\n');
     Serial.print("Received: ");
