@@ -4,9 +4,13 @@
 //#include "AudioLibs/AudioKit.h"
 
 I2SStream out; // Replace with desired class e.g. AudioKitStream, AnalogAudioStream etc.
-Flite flite(out);
+VolumeStream vol(out);
+Flite flite(vol);
 HardwareSerial TextSerial(1);
 
+auto vol_config = vol.defaultConfig();
+
+int volume = 100;
 
 void setup(){
   Serial.begin(115200);
@@ -21,6 +25,7 @@ void setup(){
   cfg.pin_ws = 7;
   cfg.pin_data = 8;
   cfg.pin_bck = 9;
+  vol.begin(vol_config);
   out.begin(cfg);
 }
  
@@ -29,6 +34,15 @@ void loop() {
     Serial.print("Received: ");
     Serial.println(sin);
     if (!sin.isEmpty()) {
-        flite.say(sin.c_str());
+      //check if sin starts with #!Volume 
+      if (sin.startsWith("#!V")) {
+        String volDelta = sin.substring(8);
+        volume += volDelta.toInt();
+        if (volume > 100) volume = 100;
+        if (volume < 0) volume = 0;
+        vol.setVolume((volume)/100.0);
+        return;
+      }
+      flite.say(sin.c_str());
     }
 }
