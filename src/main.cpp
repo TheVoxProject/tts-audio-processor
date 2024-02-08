@@ -15,7 +15,7 @@ int volume = 100;
 void setup(){
   Serial.begin(115200);
   TextSerial.begin(115200, SERIAL_8N1, 5, 6);
-  //AudioLogger::instance().begin(Serial, AudioLogger::None);
+  AudioLogger::instance().begin(Serial, AudioLogger::Warning);
 
   auto cfg = out.defaultConfig();
   cfg.sample_rate = 8000;
