@@ -11,7 +11,7 @@ int volume = 100;
 
 void setup() {
 	Serial.begin(115200);
-	TextSerial.begin(115200, SERIAL_8N1, 5, 6);
+	TextSerial.begin(115200, SERIAL_8N1, 6, 5);
 	auto cfg = out.defaultConfig();
 	cfg.sample_rate = 8000;
 	cfg.channels = 1;
@@ -30,7 +30,7 @@ void loop() {
 	if (!sin.isEmpty()) {
 		// Check if sin starts with #!Volume
 		if (sin.startsWith("#!V")) {
-			String volDelta = sin.substring(8);
+			String volDelta = sin.substring(4, sin.length() - 1);
 			volume += volDelta.toInt();
 			if (volume > 100)
 				volume = 100;
