@@ -2,7 +2,7 @@
 #include <HardwareSerial.h>
 #include <espeak.h>
 
-//#define DEBUG
+// #define DEBUG
 
 I2SStream out;
 VolumeStream vol(out);
@@ -19,7 +19,7 @@ int rate = 200;
 void setup() {
 	Serial.begin(115200);
 	espeak.begin();
-	//TextSerial.begin(115200, SERIAL_8N1, 6, 5);
+	// TextSerial.begin(115200, SERIAL_8N1, 6, 5);
 	auto cfg = out.defaultConfig();
 	auto espeak_info = espeak.audioInfo();
 	cfg.sample_rate = espeak_info.sample_rate;
@@ -31,17 +31,16 @@ void setup() {
 	cfg.pin_bck = 9;
 	vol.begin(vol_config);
 	out.begin(cfg);
-	#ifdef DEBUG
+#ifdef DEBUG
 	Serial.println("Waiting for data...");
 	espeak.say("Hello World");
-	//HWCDC TalkSerial = Serial;
-	#else
+// HWCDC TalkSerial = Serial;
+#else
 	TextSerial.begin(115200, SERIAL_8N1, 6, 5);
-	#endif
+#endif
 }
 
 void loop() {
-
 	String sin = TextSerial.readStringUntil('\n');
 	Serial.printf("Received: %s\n", sin);
 	if (!sin.isEmpty()) {
@@ -55,14 +54,18 @@ void loop() {
 				volume = 0;
 			vol.setVolume((volume) / 100.0);
 			return;
-		} else if (sin.startsWith("#!S")) {
-			String voice = sin.substring(4, sin.length() - 1);
-			rate += voice.toInt();
+		} else if (sin.startsWith("#!R")) {
+			String rateDelta = sin.substring(4, sin.length() - 1);
+			rate += rateDelta.toInt();
 			if (rate > 450)
 				rate = 450;
 			if (rate < 80)
 				rate = 80;
 			espeak.setRate(rate);
+			return;
+		} else if (sin.startsWith("#!S")) {
+			// Stop speech
+			espeak.end();
 			return;
 		}
 		espeak.say(sin.c_str());
